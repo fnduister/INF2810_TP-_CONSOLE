@@ -14,6 +14,10 @@ void Sommet::setId(int id) {
 	this->id = id;
 }
 
+void Sommet::setArc(Arc* arc) {
+	this->arc = arc;
+}
+
 int Sommet::getType() const
 {
 	return type;
