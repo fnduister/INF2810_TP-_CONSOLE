@@ -6,11 +6,14 @@
 #include "Arc.h"
 #define OUT;
 
-int separerLigne(std::string& ligne, std::string delimiter=",", std::vector<int>& )
+int separerLigne(std::string& ligne, std::string delimiter=",", std::vector<int>& valeurs)
 {
-	size_t pos = ligne.find(',');
-	int element = std::stoi(ligne.substr(0, pos));
-
+	size_t pos = 0;
+	while (!ligne.empty()) {
+		pos = ligne.find(',');
+		valeurs.push_back(std::stoi(ligne.substr(0, pos)));
+		ligne.erase(0, pos + delimiter.length());
+	}
 }
 
 int main(int* argc, char* argv[]) {
