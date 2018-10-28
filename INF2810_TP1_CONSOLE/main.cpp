@@ -16,6 +16,21 @@ int separerLigne(std::string& ligne, std::string delimiter=",", std::vector<int>
 	}
 }
 
+
+
+void split3(const std::string& str, vector<string>& cont,
+	char delim = ' ')
+{
+	std::size_t current, previous = 0;
+	current = str.find(delim);
+	while (current != std::string::npos) {
+		cont.push_back(str.substr(previous, current - previous));
+		previous = current + 1;
+		current = str.find(delim, previous);
+	}
+	cont.push_back(str.substr(previous, current - previous));
+}
+
 int main(int* argc, char* argv[]) {
 	std::ifstream fichier;
 	Graphe* graphePrincipal = new Graphe();
