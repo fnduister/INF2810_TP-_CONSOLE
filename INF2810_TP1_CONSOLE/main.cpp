@@ -60,8 +60,8 @@ Graphe* CreerGraphe(string nomFichier){
 				{
 					Arc* nouvelArc = new Arc(stoi(vect_temp[0]), stoi(vect_temp[1]), stoi(vect_temp[2]));
 
-					graphePrincipal->GetSommetById(stoi(vect_temp[0]))->setArc(nouvelArc);
-					graphePrincipal->GetSommetById(stoi(vect_temp[1]))->setArc(nouvelArc);
+					graphePrincipal->GetSommetById(stoi(vect_temp[0]))->ajouterArc(nouvelArc);
+					graphePrincipal->GetSommetById(stoi(vect_temp[1]))->ajouterArc(nouvelArc);
 				}
 			}
 			else
@@ -84,7 +84,12 @@ int main(int* argc, char* argv[]) {
 
 	Graphe* graphePrincipal = CreerGraphe(nomFichier);
 
+	
+
 	int pause = 0;
 	std::cin >> pause;
 	return 0;
 }
+
+
+

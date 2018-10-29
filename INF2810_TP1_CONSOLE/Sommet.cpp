@@ -1,7 +1,6 @@
 #include "Sommet.h"
 
 
-
 Sommet::Sommet()
 {
 }
@@ -14,8 +13,9 @@ void Sommet::setId(int id) {
 	this->id = id;
 }
 
-void Sommet::setArc(Arc* arc) {
-	this->arc = arc;
+void Sommet::ajouterArc(Arc* arc)
+{
+	arcs.push_back(arc);
 }
 
 int Sommet::getType() const
