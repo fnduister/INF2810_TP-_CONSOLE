@@ -8,8 +8,10 @@ public:
 	Graphe();
 	~Graphe();
 	void ajouterSommet(Sommet* sommet);
+	void Afficher();
 	Sommet* GetSommetById(int sommetId);
 private:
 	std::vector<Sommet*> sommets;
+
 };
 

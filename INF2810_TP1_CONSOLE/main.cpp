@@ -71,7 +71,12 @@ Graphe* CreerGraphe(string nomFichier){
 		}
 	}
 
+	fichier.close();
 	return graphePrincipal;
+}
+
+void LireGraphe(Graphe* graphePrincipal){
+	graphePrincipal->Afficher();
 }
 
 int main(int* argc, char* argv[]) {
@@ -84,7 +89,7 @@ int main(int* argc, char* argv[]) {
 
 	Graphe* graphePrincipal = CreerGraphe(nomFichier);
 
-	
+	LireGraphe(graphePrincipal);
 
 	int pause = 0;
 	std::cin >> pause;

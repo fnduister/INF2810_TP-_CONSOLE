@@ -1,6 +1,7 @@
 #pragma once
 #include "Arc.h"
 
+
 class Sommet
 {
 public:
@@ -15,10 +16,13 @@ public:
 
 	int getType() const;
 	int getGain() const;
+
+	void afficher();
 private:
 	int id;
 	int type;
 	int gain;
 	std::vector<Arc*> arcs;
+
 };
 

@@ -28,6 +28,20 @@ int Sommet::getGain() const
 	return gain;
 }
 
+void Sommet::afficher()
+{
+	std::cout << id + "(";
+
+	for (int i = 0; i < arcs.size(); i++) {
+		arcs[i]->afficher();
+
+		if (i != arcs.size() - 1)
+			std::cout << ", ";
+	}
+
+	std::cout << ")" << "\n";
+}
+
 void Sommet::setType(int type)
 {
 	this->type = type;

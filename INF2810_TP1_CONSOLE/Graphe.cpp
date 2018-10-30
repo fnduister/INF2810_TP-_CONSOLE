@@ -24,3 +24,9 @@ Sommet* Graphe::GetSommetById(int sommetId){
 	if (i == sommets.size()) return nullptr;
 	return sommets[i];
 }
+
+void Graphe::Afficher(){
+	for (int i = 0; i < sommets.size(); i++){
+		sommets[i]->afficher();
+	}
+}
