@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include "Arc.h"
 using namespace std;
 
 class Arc;
@@ -25,7 +26,7 @@ private:
 	int id;
 	int type;
 	int gain;
-	std::vector<Arc*> arcs;
+	vector<Arc*> arcs;
 
 };
 

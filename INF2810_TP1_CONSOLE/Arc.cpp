@@ -24,9 +24,9 @@ void Arc::ajouterSommet(Sommet* sommet1, Sommet* sommet2)
 void Arc::afficher(Sommet* sommet)
 {
 	Sommet* sommetTemp = sommet;
-	if (sommet->getId() != sommet1->getId()) {
-		sommetTemp = sommet1;
+	if (sommet->getId() == sommet1->getId()) {
+		sommetTemp = sommet2;
 	}
 
-	std::cout << "([ id = " << sommetTemp->getId() << " , type = " << sommetTemp->getType() << "], Distance = " << distance << ")";
+	std::cout << "	([ id = " << sommetTemp->getId() << " , type = " << sommetTemp->getType() << "], Distance = " << distance << ")";
 }

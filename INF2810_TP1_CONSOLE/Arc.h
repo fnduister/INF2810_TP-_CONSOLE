@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include "Sommet.h"
+
 class Sommet;
 
 class Arc
