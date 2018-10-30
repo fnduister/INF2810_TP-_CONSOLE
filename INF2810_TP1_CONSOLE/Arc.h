@@ -2,8 +2,7 @@
 #include <vector>
 #include <iostream>
 #include "Sommet.h"
-
-using namespace std;
+class Sommet;
 
 class Arc
 {
@@ -14,9 +13,10 @@ public:
 	void ajouterSommet(Sommet* sommet1, Sommet* sommet2);
 
 	void afficher(Sommet* sommet);
+
 private:
-	int distance;
 	Sommet* sommet1;
 	Sommet* sommet2;
+	int distance;
 };
 

@@ -1,5 +1,7 @@
 #include "Arc.h"
 
+class Sommet;
+
 
 Arc::Arc(Sommet* sommet1, Sommet* sommet2, int distance)
 {
