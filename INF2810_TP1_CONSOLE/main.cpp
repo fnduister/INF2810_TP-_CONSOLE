@@ -79,17 +79,48 @@ void LireGraphe(Graphe* graphePrincipal){
 	graphePrincipal->Afficher();
 }
 
+char afficherMenu()
+{
+	char reponse;
+	string reponses = "abcd";
+	do {
+		cout << "(a) Mettre à jour la carte" << endl;
+		cout << "(b) Déterminer le plus court chemin sécuritaire" << endl;
+		cout << "(c) Extraire un sous-graphe" << endl;
+		cout << "(d) Quitter" << endl;
+		cout << "votre choix: " << endl;
+		cin >> reponse;
+	} while (reponses.find(reponse) == string::npos);
+	return reponse;
+}
+
+void mettreAjourCarte()
+{
+		string nomFichier;
+		std::cout << "entrer le nom du fichier svp:\n";
+		std::cin >> nomFichier;
+
+		Graphe* graphePrincipal = CreerGraphe(nomFichier);
+		cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
+
+		LireGraphe(graphePrincipal);
+}
+
 int main(int* argc, char* argv[]) {
 	//enum VehiculeTypePosition{NIOH,MIOH};
 	//enum VehiculeCategoriePosition { NIOH, MIOH };
-	string nomFichier;
 
-	std::cout << "entrer le nom du fichier svp:\n";
-	std::cin >> nomFichier;
 
-	Graphe* graphePrincipal = CreerGraphe(nomFichier);
-
-	LireGraphe(graphePrincipal);
+	switch (afficherMenu())
+	{
+	case 'a':
+		mettreAjourCarte();
+		break;
+	case 'b':
+		break;
+	default:
+		break;
+	}
 
 	int pause = 0;
 	std::cin >> pause;
