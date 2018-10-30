@@ -30,10 +30,10 @@ int Sommet::getGain() const
 
 void Sommet::afficher()
 {
-	std::cout << id + "(";
+	std::cout << "([ id = " << id << " , type = " << type << "]";
 
 	for (int i = 0; i < arcs.size(); i++) {
-		arcs[i]->afficher();
+		arcs[i]->afficher(this);
 
 		if (i != arcs.size() - 1)
 			std::cout << ", ";

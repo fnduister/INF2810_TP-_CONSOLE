@@ -1,11 +1,8 @@
 #include "Graphe.h"
 
-
-
 Graphe::Graphe()
 {
 }
-
 
 Graphe::~Graphe()
 {
@@ -14,6 +11,15 @@ Graphe::~Graphe()
 void Graphe::ajouterSommet(Sommet* sommet)
 {
 	sommets.push_back(sommet);
+}
+
+void Graphe::ajouterArc(Arc* arc)
+{
+	arcs.push_back(arc);
+}
+
+void Graphe::ajouterArc(Arc * arc)
+{
 }
 
 Sommet* Graphe::GetSommetById(int sommetId){

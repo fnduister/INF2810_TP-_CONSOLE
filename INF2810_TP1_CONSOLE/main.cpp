@@ -23,6 +23,8 @@ void split(const std::string& str, vector<string>& cont,
 }
 
 Graphe* CreerGraphe(string nomFichier){
+
+
 	ifstream fichier(nomFichier);
 	if (fichier.fail()){
 		do{
@@ -58,10 +60,15 @@ Graphe* CreerGraphe(string nomFichier){
 				}
 				else
 				{
-					Arc* nouvelArc = new Arc(stoi(vect_temp[0]), stoi(vect_temp[1]), stoi(vect_temp[2]));
+					Sommet* sommet1 = graphePrincipal->GetSommetById(stoi(vect_temp[0]));
+					Sommet* sommet2 = graphePrincipal->GetSommetById(stoi(vect_temp[1]));
 
-					graphePrincipal->GetSommetById(stoi(vect_temp[0]))->ajouterArc(nouvelArc);
-					graphePrincipal->GetSommetById(stoi(vect_temp[1]))->ajouterArc(nouvelArc);
+					Arc* nouvelArc = new Arc(sommet1, sommet2, stoi(vect_temp[2]));
+
+					sommet1->ajouterArc(nouvelArc);
+					sommet2->ajouterArc(nouvelArc);
+
+
 				}
 			}
 			else
@@ -96,9 +103,11 @@ char afficherMenu()
 
 void mettreAjourCarte()
 {
-		string nomFichier;
+		string nomFichier = "centresLocaux.txt";
 		std::cout << "entrer le nom du fichier svp:\n";
-		std::cin >> nomFichier;
+	/*	std::cin >> nomFichier;*/
+
+		nomFichier = "centresLocaux.txt";
 
 		Graphe* graphePrincipal = CreerGraphe(nomFichier);
 		cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
@@ -121,6 +130,7 @@ int main(int* argc, char* argv[]) {
 	default:
 		break;
 	}
+
 
 	int pause = 0;
 	std::cin >> pause;

@@ -1,10 +1,10 @@
 #include "Arc.h"
 
 
-Arc::Arc(int id1, int id2, int distance)
+Arc::Arc(Sommet* sommet1, Sommet* sommet2, int distance)
 {
-	sommetIDS[0] = id1;
-	sommetIDS[1] = id2;
+	this->sommet1 = sommet1;
+	this->sommet2 = sommet2;
 	this->distance = distance;
 }
 
@@ -13,13 +13,18 @@ Arc::~Arc()
 {
 }
 
-void Arc::ajouterSommetId(int id1, int id2)
+void Arc::ajouterSommet(Sommet* sommet1, Sommet* sommet2)
 {
-	sommetIDS[0] = id1;
-	sommetIDS[1] = id2;
+	this->sommet1 = sommet1;
+	this->sommet2 = sommet2;
 }
 
-void Arc::afficher()
+void Arc::afficher(Sommet* sommet)
 {
-	std::cout << "(" + sommetIDS[1] << ", " << distance +  ")";
+	Sommet* sommetTemp = sommet;
+	if (sommet->getId() != sommet1->getId()) {
+		sommetTemp = sommet1;
+	}
+
+	std::cout << "([ id = " << sommetTemp->getId() << " , type = " << sommetTemp->getType() << "], Distance = " << distance << ")";
 }
