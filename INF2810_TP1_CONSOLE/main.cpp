@@ -5,9 +5,10 @@
 #include "Graphe.h"
 #include "Arc.h"
 #include <vector> 
+#include "Trajet.h"
 
 using namespace std;
-
+Graphe* graphe;
 
 void split(const std::string& str, vector<string>& cont,
 	char delim = ',')
@@ -109,10 +110,61 @@ void mettreAjourCarte()
 
 		nomFichier = "centresLocaux.txt";
 
-		Graphe* graphePrincipal = CreerGraphe(nomFichier);
+		graphe = CreerGraphe(nomFichier);
 		cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
 
-		LireGraphe(graphePrincipal);
+		LireGraphe(graphe);
+}
+
+double getTauxRecharge(int type_transport) {
+	return 0;
+}
+
+void initTab(vector<Trajet*>& tab) {
+	
+}
+
+int getSmallestDistanceNotVisited(vector<Trajet*> tab) {
+	return 0;
+}
+
+bool IsAllVisited(vector<Trajet*> tab) {
+	return false;
+}
+
+vector<Sommet*> getAdjacentNotVisited(int id) {
+	
+}
+
+Trajet* getTrajetById(int id) {
+	return nullptr;
+}
+
+
+void plusCourtChemin(int depart, int destination, int type_transport) {
+
+	double taux = getTauxRecharge(type_transport);
+	int current_id;
+
+	vector<Trajet*> list_trajet;
+	initTab(list_trajet);
+
+	do {
+		current_id = getSmallestDistanceNotVisited(list_trajet);
+
+		vector<Sommet*> AdjacentNotVisited = getAdjacentNotVisited(current_id);
+
+		for (int i = 0; i < AdjacentNotVisited.size(); i++) {
+
+			Trajet* trajet = getTrajetById(AdjacentNotVisited[i]->getId());
+
+			//
+
+		}
+
+
+	} while (IsAllVisited(list_trajet));
+	
 }
 
 int main(int* argc, char* argv[]) {
