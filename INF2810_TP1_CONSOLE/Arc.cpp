@@ -28,7 +28,7 @@ void Arc::afficher(Sommet* sommet)
 		sommetTemp = sommet2;
 	}
 
-	std::cout << "	([ id = " << sommetTemp->getId() << " , type = " << sommetTemp->getType() << "], Distance = " << distance << ")";
+	std::cout << "	([ id = " << sommetTemp->getId() << " , type = " << sommetTemp->getType() << "], Distance = " << temps << ")";
 }
 
 Sommet * Arc::getSommet1()

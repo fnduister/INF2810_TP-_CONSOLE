@@ -56,7 +56,7 @@ void Sommet::afficher()
 }
 
 int Sommet::getTemps(int idAutreSommet) const {
-	return getArc(idAutreSommet)->getTemps;
+	return getArc(idAutreSommet)->getTemps();
 }
 
 void Sommet::setType(int type)
