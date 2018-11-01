@@ -336,3 +336,6 @@ ASALocalRun/
 
 # to ignore cSproj file
 .vcxproj
+*.vcxproj
+
+INF2810_TP1_CONSOLE/INF2810_TP1_CONSOLE\.vcxproj\.filters
