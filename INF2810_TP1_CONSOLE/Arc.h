@@ -8,12 +8,13 @@ class Sommet;
 class Arc
 {
 public:
-	Arc(Sommet* sommet1, Sommet* sommet2, int distance);
+	Arc(Sommet* sommet1, Sommet* sommet2, int temps);
 	~Arc();
-	int retournerIdSommetAdjacent(int idPremierSommet);
+	Sommet* retournerIdSommetAdjacent(int idPremierSommet);
 	void ajouterSommet(Sommet* sommet1, Sommet* sommet2);
 
 	void afficher(Sommet* sommet);
+	int getTemps() const;
 
 	Sommet* getSommet1();
 	Sommet* getSommet2();
@@ -21,6 +22,6 @@ public:
 private:
 	Sommet* sommet1;
 	Sommet* sommet2;
-	int distance;
+	int temps;
 };
 

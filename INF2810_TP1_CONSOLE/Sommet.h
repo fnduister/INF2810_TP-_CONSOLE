@@ -16,8 +16,10 @@ public:
 	void setType(int type);
 	void setArc(Arc* arc);
 
+	Arc* getArc(int idAutreSommet) const;
 	void ajouterArc(Arc* arc);
-
+	bool isVisited() const;
+	int getTemps(int idAutreSommet) const;
 	int getType() const;
 	int getGain() const;
 
@@ -29,6 +31,6 @@ private:
 	int type;
 	int gain;
 	vector<Arc*> arcs;
-
+	bool visited;
 };
 

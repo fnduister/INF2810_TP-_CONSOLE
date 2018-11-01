@@ -33,6 +33,14 @@ vector<Arc*> Sommet::getArcs()
 	return arcs;
 }
 
+Arc* Sommet::getArc(int idAutreSommet) const {
+	for (Arc* arc : arcs) {
+		if (arc->getSommet1()->getId() == idAutreSommet || arc->getSommet2()->getId() == idAutreSommet)
+			return arc;
+	}
+	return nullptr;
+}
+
 void Sommet::afficher()
 {
 	std::cout << "([ id = " << id << " , type = " << type << "] \n";
@@ -47,11 +55,18 @@ void Sommet::afficher()
 	std::cout << ")" << "\n";
 }
 
+int Sommet::getTemps(int idAutreSommet) const {
+	return getArc(idAutreSommet)->getTemps;
+}
+
 void Sommet::setType(int type)
 {
 	this->type = type;
 }
 
+bool Sommet::isVisited() const {
+	return visited;
+}
 
 Sommet::~Sommet()
 {

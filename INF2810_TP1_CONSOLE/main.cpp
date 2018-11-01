@@ -117,7 +117,7 @@ void mettreAjourCarte()
 }
 
 double getTauxRecharge(int type_transport) {
-	return 0;
+	return 30.0;
 }
 
 void initTab(vector<Trajet*>& tab, int depart) {
@@ -132,9 +132,10 @@ void initTab(vector<Trajet*>& tab, int depart) {
 	}
 }
 
-int getSmallestDistanceNotVisited(vector<Trajet*> tab) {
+int getSmallestDistanceNotVisited(vector<Trajet*> trajets) {
 	int min = std::numeric_limits<int>::max();
-	for (int i = 0; i < tab.size(); i++) {;
+	for (Trajet* trajet:trajets) {
+
 		if (!tab[i]->getIsVisited() && min < tab[i]->getTemps() )
 			min = tab[i]->getTemps();
 	}
@@ -151,15 +152,12 @@ bool IsAllVisited(vector<Trajet*> tab) {
 
 vector<Sommet*> getAdjacentsNotVisited(vector<Trajet*> tab, int id) {
 	vector<Sommet*> results;
+	Sommet* sommet_temp;
 	vector<Arc*> list_arc = graphe->GetSommetById(id)->getArcs();
-	for (int i = 0; i < list_arc.size(); i++) {
-		if (list_arc[i]->getSommet1()->getId() == id) {
-			if(isNotVisited(tab, list_arc[i]->getSommet2()->getId()))
-				results.push_back(list_arc[i]->getSommet2());
-		}
-		else {
-			if (isNotVisited(tab, list_arc[i]->getSommet1()->getId()))
-				results.push_back(list_arc[i]->getSommet1());
+	for (Arc* arc : list_arc) {
+		sommet_temp = arc->retournerIdSommetAdjacent(id);
+		if (!sommet_temp->isVisited) {
+			results.push_back(sommet_temp);
 		}
 	}
 }
@@ -184,25 +182,23 @@ Trajet* getTrajetById(int id) {
 void plusCourtChemin(int depart, int destination, int type_transport) {
 
 	double taux = getTauxRecharge(type_transport);
-	int current_id;
+	int current_id, current_temps, nouveauTemps;
 
 	vector<Trajet*> list_trajet;
 	initTab(list_trajet, depart);
 
 	do {
 		current_id = getSmallestDistanceNotVisited(list_trajet);
+		current_temps = getTrajetById(current_id)->getTemps();
+		vector<Sommet*> adjacentNotVisited = getAdjacentsNotVisited(list_trajet, current_id);
 
-		vector<Sommet*> AdjacentNotVisited = getAdjacentsNotVisited(list_trajet, current_id);
-
-		for (int i = 0; i < AdjacentNotVisited.size(); i++) {
-
-			Trajet* trajet = getTrajetById(AdjacentNotVisited[i]->getId());
-
-			//
-
+		for (Sommet* sommet : adjacentNotVisited) {
+			Trajet* trajet = getTrajetById(sommet->getId());
+			nouveauTemps = sommet->getArcs->getTemps() + current_temps;
+			if (trajet->getTemps() > nouveauTemps)
+				trajet->setTemps(nouveauTemps);
 		}
-
-
+		graphe->GetSommetById(current_id);
 	} while (IsAllVisited(list_trajet));
 	
 }
