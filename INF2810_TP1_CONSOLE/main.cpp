@@ -91,8 +91,8 @@ char afficherMenu()
 	char reponse;
 	string reponses = "abcd";
 	do {
-		cout << "(a) Mettre à jour la carte" << endl;
-		cout << "(b) Déterminer le plus court chemin sécuritaire" << endl;
+		cout << "(a) Mettre ï¿½ jour la carte" << endl;
+		cout << "(b) Dï¿½terminer le plus court chemin sï¿½curitaire" << endl;
 		cout << "(c) Extraire un sous-graphe" << endl;
 		cout << "(d) Quitter" << endl;
 		cout << "votre choix: " << endl;
@@ -179,9 +179,11 @@ bool isNotVisited(vector<Trajet*> tab, int id) {
 }
 
 
-
-
-Trajet* getTrajetById(int id) {
+Trajet* getTrajetById(vector<Trajet*> tab, int id) {
+	for (int i = 0; i < tab.size(); i++) {
+		if (tab[i]->getId() == id)
+			return tab[i];
+	}
 	return nullptr;
 }
 
@@ -202,13 +204,15 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 		vector<Sommet*> adjacentNotVisited = getAdjacentsNotVisited(graphe, list_trajet, currentTrajet->getId());
 
 		for (Sommet* sommet : adjacentNotVisited) {
-			Trajet* trajet = getTrajetById(sommet->getId());
-			//nouveauTemps = sommet->getArcs()->getTemps() + current_temps;
-			if (trajet->getTemps() > nouveauTemps)
-				trajet->setTemps(nouveauTemps);
+			Trajet* adjacentTrajet = getTrajetById(list_trajet, sommet->getId());
+			nouveauTemps = sommet->getArc(currentTrajet->getId())->getTemps() + currentTrajet->getTemps();
+			if (adjacentTrajet->getTemps() > nouveauTemps)
+				adjacentTrajet->setTemps(nouveauTemps);
 		}
+
+		currentTrajet->setIsVisited(true);
 		//graphe->GetSommetById(current_id);
-	} while (IsAllVisited(list_trajet));
+	} while (!IsAllVisited(list_trajet));
 	
 }
 
