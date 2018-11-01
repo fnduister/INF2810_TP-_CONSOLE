@@ -15,6 +15,9 @@ public:
 
 	void afficher(Sommet* sommet);
 
+	Sommet* getSommet1();
+	Sommet* getSommet2();
+
 private:
 	Sommet* sommet1;
 	Sommet* sommet2;

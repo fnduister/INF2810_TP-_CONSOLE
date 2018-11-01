@@ -28,6 +28,11 @@ int Sommet::getGain() const
 	return gain;
 }
 
+vector<Arc*> Sommet::getArcs()
+{
+	return arcs;
+}
+
 void Sommet::afficher()
 {
 	std::cout << "([ id = " << id << " , type = " << type << "] \n";

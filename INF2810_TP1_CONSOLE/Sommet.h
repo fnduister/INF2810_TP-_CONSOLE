@@ -21,6 +21,8 @@ public:
 	int getType() const;
 	int getGain() const;
 
+	vector<Arc*> getArcs();
+
 	void afficher();
 private:
 	int id;

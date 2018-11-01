@@ -14,6 +14,8 @@ public:
 	void Afficher();
 	Sommet* GetSommetById(int sommetId);
 
+	std::vector<Sommet*> GetSommets();
+
 private:
 	std::vector<Sommet*> sommets;
 	std::vector<Arc*> arcs;

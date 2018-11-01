@@ -30,3 +30,14 @@ void Arc::afficher(Sommet* sommet)
 
 	std::cout << "	([ id = " << sommetTemp->getId() << " , type = " << sommetTemp->getType() << "], Distance = " << distance << ")";
 }
+
+Sommet * Arc::getSommet1()
+{
+	return sommet1;
+}
+
+Sommet * Arc::getSommet2()
+{
+	return sommet2;
+}
+

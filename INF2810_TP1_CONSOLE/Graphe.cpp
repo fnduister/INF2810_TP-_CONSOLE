@@ -28,6 +28,11 @@ Sommet* Graphe::GetSommetById(int sommetId){
 	return sommets[i];
 }
 
+std::vector<Sommet*> Graphe::GetSommets()
+{
+	return sommets;
+}
+
 void Graphe::Afficher(){
 	for (int i = 0; i < sommets.size(); i++){
 		sommets[i]->afficher();

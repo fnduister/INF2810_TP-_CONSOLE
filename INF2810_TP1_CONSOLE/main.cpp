@@ -120,21 +120,61 @@ double getTauxRecharge(int type_transport) {
 	return 0;
 }
 
-void initTab(vector<Trajet*>& tab) {
-	
+void initTab(vector<Trajet*>& tab, int depart) {
+	vector<Sommet*> list_sommets = graphe->GetSommets();
+	for (int i = 0; i < list_sommets.size(); i++) {
+		if (list_sommets[i]->getId() == depart) {
+			tab.push_back(new Trajet(list_sommets[i]->getId(), 0, 0, 1, 1));
+		}
+		else {
+			tab.push_back(new Trajet(list_sommets[i]->getId(), std::numeric_limits<int>::max(), 0, 0, 0));
+		}
+	}
 }
 
 int getSmallestDistanceNotVisited(vector<Trajet*> tab) {
-	return 0;
+	int min = std::numeric_limits<int>::max();
+	for (int i = 0; i < tab.size(); i++) {;
+		if (!tab[i]->getIsVisited() && min < tab[i]->getTemps() )
+			min = tab[i]->getTemps();
+	}
+	return min;
 }
 
 bool IsAllVisited(vector<Trajet*> tab) {
-	return false;
+	for (int i = 0; i < tab.size(); i++) {
+		if (!tab[i]->getIsVisited())
+			return false;
+	}
+	return true;
 }
 
-vector<Sommet*> getAdjacentNotVisited(int id) {
-	
+vector<Sommet*> getAdjacentsNotVisited(vector<Trajet*> tab, int id) {
+	vector<Sommet*> results;
+	vector<Arc*> list_arc = graphe->GetSommetById(id)->getArcs();
+	for (int i = 0; i < list_arc.size(); i++) {
+		if (list_arc[i]->getSommet1()->getId() == id) {
+			if(isNotVisited(tab, list_arc[i]->getSommet2()->getId()))
+				results.push_back(list_arc[i]->getSommet2());
+		}
+		else {
+			if (isNotVisited(tab, list_arc[i]->getSommet1()->getId()))
+				results.push_back(list_arc[i]->getSommet1());
+		}
+	}
 }
+
+
+bool isNotVisited(vector<Trajet*> tab, int id) {
+	for (int i = 0; i < tab.size(); i++) {
+		if (tab[i]->getId() == id)
+			return false;
+	}
+	return true;
+}
+
+
+
 
 Trajet* getTrajetById(int id) {
 	return nullptr;
@@ -147,12 +187,12 @@ void plusCourtChemin(int depart, int destination, int type_transport) {
 	int current_id;
 
 	vector<Trajet*> list_trajet;
-	initTab(list_trajet);
+	initTab(list_trajet, depart);
 
 	do {
 		current_id = getSmallestDistanceNotVisited(list_trajet);
 
-		vector<Sommet*> AdjacentNotVisited = getAdjacentNotVisited(current_id);
+		vector<Sommet*> AdjacentNotVisited = getAdjacentsNotVisited(list_trajet, current_id);
 
 		for (int i = 0; i < AdjacentNotVisited.size(); i++) {
 
