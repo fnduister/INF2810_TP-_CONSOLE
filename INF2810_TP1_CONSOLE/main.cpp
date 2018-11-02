@@ -6,8 +6,12 @@
 #include "Arc.h"
 #include <vector> 
 #include "Trajet.h"
+#include <algorithm>
 
 using namespace std;
+
+enum VehiculeCategoriePosition { HAUT_RISQUE, MOYEN_RISQUE, FAIBLE_RISQUE };
+
 
 void split(const std::string& str, vector<string>& cont,
 	char delim = ',')
@@ -101,19 +105,20 @@ char afficherMenu()
 	return reponse;
 }
 
-Graphe* mettreAjourCarte()
+Graphe* mettreAjourCarte(bool demarrageApplication = false)
 {
 	Graphe* graphe = new Graphe;
-	string nomFichier = "centresLocaux.txt";
-	std::cout << "entrer le nom du fichier svp:\n";
-	/*	std::cin >> nomFichier;*/
+	string nomFichierParDefaut = "centresLocaux.txt";
+	string nomFichier = "";
 
-	nomFichier = "centresLocaux.txt";
-
-	graphe = CreerGraphe(nomFichier);
-	cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
-
-	LireGraphe(graphe);
+	if (!demarrageApplication) {
+		std::cout << "entrer le nom du fichier svp:\n";
+		graphe = CreerGraphe(nomFichier);
+		cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
+		std::cin >> nomFichier;
+		LireGraphe(graphe);
+	}
+	else { graphe = CreerGraphe(nomFichierParDefaut); }
 	return graphe;
 }
 
@@ -193,13 +198,29 @@ void afficherChemin(vector<Trajet*>& trajets, int depart, int destination)
 {
 	Trajet* current = getTrajetById(trajets, destination);
 	int initialId = depart;
-	cout << current->getId() ;
+	cout << current->getId();
 	while (current->getId() != depart)
 	{
 		cout << " <-- " << current->getIdDepart();
 		current = getTrajetById(trajets, current->getIdDepart());
 	}
 
+}
+
+bool plusgrandtrajet( Trajet* a, Trajet* b)
+{
+	return a->getTemps() > b->getTemps();
+}
+
+Trajet* extraireSousGraphe(vector<Trajet*>& trajets, int depart)
+{
+	std::sort(trajets.begin(), trajets.end(), plusgrandtrajet);
+	Trajet* trajetLePlusLong;
+	for(Trajet* trajet : trajets)
+	{
+		if (trajet->getTemps() != std::numeric_limits<int>::max())
+			return trajet;
+	}
 }
 
 void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_transport) {
@@ -320,12 +341,60 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 }
 
 
+void prendreInformationsPlusLongChemin(Graphe* graphe, int &depart, int &type_transport)
+{
+	int choix;
+	do {
+		cout << "- point d'origine: ";
+		cin >> depart; cout << endl;
+	} while (!graphe->GetSommetById(depart));
+
+	cout << endl;
+
+	do
+	{
+		cout << "Choisissez la categorie de transport que vous voulez" << endl;
+		cout << " 1 - Haut risque \n 2 - Moyen risque \n 3 - Faible risque \n ";
+		cin >> choix;
+
+		switch (choix)
+		{
+		case 1:
+			type_transport = HAUT_RISQUE;
+			break;
+		case 2:
+			type_transport = MOYEN_RISQUE;
+			break;
+		case 3:
+			type_transport = FAIBLE_RISQUE;
+			break;
+		default:
+			cout << "votre choix n'est pas valide" << endl;
+			choix = 4;
+			break;
+		}
+	} while (choix == 4);
+}
+
+void prendreInformationsPlusCourtChemin(Graphe* graphe, int &depart, int &destination, int &type_transport)
+{
+	do {
+		cout << "- point de destination: ";
+		cin >> destination; cout << endl;
+	} while (!graphe->GetSommetById(destination));
+
+	cout << endl;
+
+	prendreInformationsPlusLongChemin(graphe, depart, type_transport);
+
+
+}
+
 
 int main(int* argc, char* argv[]) {
-	//enum VehiculeTypePosition{NIOH,MIOH};
-	//enum VehiculeCategoriePosition { NIOH, MIOH };
-
-	Graphe* graphe = new Graphe();
+	enum VehiculeTypePosition{NI_NH,LI_ION};
+	Graphe* graphe = mettreAjourCarte(true);
+	int depart = 0, destination = 0, categorie_transport = HAUT_RISQUE;
 
 	switch (afficherMenu())
 	{
@@ -333,13 +402,18 @@ int main(int* argc, char* argv[]) {
 		graphe = mettreAjourCarte();
 		break;
 	case 'b':
-		graphe = mettreAjourCarte();
+		prendreInformationsPlusCourtChemin(graphe, depart, destination, categorie_transport);
+		plusCourtChemin(graphe, depart, destination, categorie_transport);
+		break;
+	case 'c':
+		prendreInformationsPlusLongChemin(graphe, depart, categorie_transport);
 		plusCourtChemin(graphe, 28, 1, 1);
 		break;
+	case 'd':
+		cout << "a la prochaine";
 	default:
 		break;
 	}
-
 
 	int pause = 0;
 	std::cin >> pause;
