@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <fstream>
 #include "Sommet.h"
@@ -22,19 +22,19 @@ void split(const std::string& str, vector<string>& cont,
 	cont.push_back(str.substr(previous, current - previous));
 }
 
-Graphe* CreerGraphe(string nomFichier){
+Graphe* CreerGraphe(string nomFichier) {
 
 
 	ifstream fichier(nomFichier);
-	if (fichier.fail()){
-		do{
+	if (fichier.fail()) {
+		do {
 			std::cout << "entrer le nom d'un fichier valide svp:\n";
 			std::cin >> nomFichier;
 			fichier.open(nomFichier);
 		} while (fichier.fail());
 	}
-		
-	
+
+
 	Graphe* graphePrincipal = new Graphe();
 	std::string ligne;
 	bool premierTraitement = true;
@@ -82,7 +82,7 @@ Graphe* CreerGraphe(string nomFichier){
 	return graphePrincipal;
 }
 
-void LireGraphe(Graphe* graphePrincipal){
+void LireGraphe(Graphe* graphePrincipal) {
 	graphePrincipal->Afficher();
 }
 
@@ -103,18 +103,18 @@ char afficherMenu()
 
 Graphe* mettreAjourCarte()
 {
-		Graphe* graphe = new Graphe;
-		string nomFichier = "centresLocaux.txt";
-		std::cout << "entrer le nom du fichier svp:\n";
+	Graphe* graphe = new Graphe;
+	string nomFichier = "centresLocaux.txt";
+	std::cout << "entrer le nom du fichier svp:\n";
 	/*	std::cin >> nomFichier;*/
 
-		nomFichier = "centresLocaux.txt";
+	nomFichier = "centresLocaux.txt";
 
-		graphe = CreerGraphe(nomFichier);
-		cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
+	graphe = CreerGraphe(nomFichier);
+	cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
 
-		LireGraphe(graphe);
-		return graphe;
+	LireGraphe(graphe);
+	return graphe;
 }
 
 double getTauxRecharge(int type_transport) {
@@ -143,9 +143,9 @@ bool IsAllVisited(vector<Trajet*> tab) {
 
 
 Trajet* getSmallestDistanceNotVisited(vector<Trajet*> trajets) {
-	int min = 0;
+	int min = std::numeric_limits<int>::max();
 	Trajet* result = nullptr;
-	for (Trajet* trajet:trajets) {
+	for (Trajet* trajet : trajets) {
 
 		if (!trajet->getIsVisited() &&  trajet->getTemps() <= min) {
 			min = trajet->getTemps();
@@ -156,7 +156,7 @@ Trajet* getSmallestDistanceNotVisited(vector<Trajet*> trajets) {
 }
 
 
-vector<Sommet*> getAdjacentsNotVisited(Graphe* graphe,  vector<Trajet*> tab, int id) {
+vector<Sommet*> getAdjacentsNotVisited(Graphe* graphe, vector<Trajet*> tab, int id) {
 	vector<Sommet*> results;
 	Sommet* sommet_temp;
 	vector<Arc*> list_arc = graphe->GetSommetById(id)->getArcs();
@@ -199,8 +199,17 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 	vector<Trajet*> list_trajet;
 	initTab(graphe, list_trajet, depart);
 
+	bool FisrtTime = true;
+
 	do {
-		currentTrajet = getSmallestDistanceNotVisited(list_trajet);
+
+		if (FisrtTime) {
+			currentTrajet = getTrajetById(list_trajet, depart);
+			FisrtTime = false;
+		}
+		else
+			currentTrajet = getSmallestDistanceNotVisited(list_trajet);
+
 		vector<Sommet*> adjacentNotVisited = getAdjacentsNotVisited(graphe, list_trajet, currentTrajet->getId());
 
 		for (Sommet* sommet : adjacentNotVisited) {
@@ -213,7 +222,7 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 		currentTrajet->setIsVisited(true);
 		//graphe->GetSommetById(current_id);
 	} while (!IsAllVisited(list_trajet));
-	
+
 }
 
 int main(int* argc, char* argv[]) {
@@ -240,6 +249,3 @@ int main(int* argc, char* argv[]) {
 	std::cin >> pause;
 	return 0;
 }
-
-
-
