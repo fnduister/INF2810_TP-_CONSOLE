@@ -13,7 +13,7 @@ public:
 	bool getIsVisited();
 
 	void setId(int id);
-	void setTemps(int temps);
+	void setTemps(double temps);
 	void setAutonomie(double autonomie);
 	void setIdDepart(int id_depart);
 	void setIsVisited(bool is_visited);
@@ -21,7 +21,7 @@ public:
 
 private:
 	int id;
-	int temps;
+	double temps;
 	double autonomie;
 	int id_depart;
 	bool is_visited;

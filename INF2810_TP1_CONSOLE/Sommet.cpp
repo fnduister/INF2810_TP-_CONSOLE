@@ -1,4 +1,5 @@
 #include "Sommet.h"
+#include <algorithm>
 
 
 Sommet::Sommet()
@@ -78,13 +79,21 @@ Sommet::~Sommet()
 {
 }
 
-int Sommet::trouverChargedAdjacent() const
+bool plusPetitArc(const Arc* first,const Arc* last)
 {
+	return first->getTemps() < last->getTemps();
+}
+
+int Sommet::trouverChargedAdjacent()
+{
+	double max = 0;
+	std::sort(arcs.begin(), arcs.end(),plusPetitArc); 
+
 	for (Arc* arc : arcs) {
-		sommet_temp = arc->retournerIdSommetAdjacent(id);
-		if (!sommet_temp->isVisited()) {
-			results.push_back(sommet_temp);
-		}
+		Sommet* sommet_temp = arc->retournerSommetAdjacent(id);
+		if (sommet_temp->isVisited() && sommet_temp->getType()) {
+			return sommet_temp->getId();
+			}
 	}
-	return results;
+	return 777;
 }

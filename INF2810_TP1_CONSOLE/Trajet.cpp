@@ -43,7 +43,7 @@ void Trajet::setId(int id)
 	this->id = id;
 }
 
-void Trajet::setTemps(int temps)
+void Trajet::setTemps(double temps)
 {
 	this->temps = temps;
 }
