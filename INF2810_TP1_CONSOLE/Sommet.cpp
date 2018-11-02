@@ -23,10 +23,6 @@ int Sommet::getType() const
 	return type;
 }
 
-int Sommet::getGain() const
-{
-	return gain;
-}
 
 vector<Arc*> Sommet::getArcs()
 {
@@ -55,6 +51,16 @@ void Sommet::afficher()
 	std::cout << ")" << "\n";
 }
 
+double Sommet::getGain() const
+{
+	return gain;
+}
+
+void Sommet::setGain(double gain)
+{
+	this->gain = gain;
+}
+
 int Sommet::getTemps(int idAutreSommet) const {
 	return getArc(idAutreSommet)->getTemps();
 }
@@ -70,4 +76,15 @@ bool Sommet::isVisited() const {
 
 Sommet::~Sommet()
 {
+}
+
+int Sommet::trouverChargedAdjacent() const
+{
+	for (Arc* arc : arcs) {
+		sommet_temp = arc->retournerIdSommetAdjacent(id);
+		if (!sommet_temp->isVisited()) {
+			results.push_back(sommet_temp);
+		}
+	}
+	return results;
 }

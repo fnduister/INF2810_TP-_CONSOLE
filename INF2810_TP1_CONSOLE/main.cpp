@@ -118,7 +118,7 @@ Graphe* mettreAjourCarte()
 }
 
 double getTauxRecharge(int type_transport) {
-	return 30.0;
+	return 0.5;
 }
 
 void initTab(Graphe* graphe, vector<Trajet*>& tab, int depart) {
@@ -156,12 +156,12 @@ Trajet* getSmallestDistanceNotVisited(vector<Trajet*> trajets) {
 }
 
 
-vector<Sommet*> getAdjacentsNotVisited(Graphe* graphe,  vector<Trajet*> tab, int id) {
+vector<Sommet*> getAdjacentsNotVisited(Graphe* graphe, int id) {
 	vector<Sommet*> results;
 	Sommet* sommet_temp;
 	vector<Arc*> list_arc = graphe->GetSommetById(id)->getArcs();
 	for (Arc* arc : list_arc) {
-		sommet_temp = arc->retournerIdSommetAdjacent(id);
+		sommet_temp = arc->retournerSommetAdjacent(id);
 		if (!sommet_temp->isVisited()) {
 			results.push_back(sommet_temp);
 		}
@@ -190,28 +190,52 @@ Trajet* getTrajetById(vector<Trajet*> tab, int id) {
 
 void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_transport) {
 
-	double taux = getTauxRecharge(type_transport);
+	double tauxDecharge = getTauxRecharge(type_transport);
 
 	Trajet* currentTrajet;
 
-	double nouveauTemps = 0;
+	double nouveauTemps = 0, nouvelAutonomie = 0.0;
 
 	vector<Trajet*> list_trajet;
 	initTab(graphe, list_trajet, depart);
 
 	do {
 		currentTrajet = getSmallestDistanceNotVisited(list_trajet);
-		vector<Sommet*> adjacentNotVisited = getAdjacentsNotVisited(graphe, list_trajet, currentTrajet->getId());
+		Sommet* currentSommet = graphe->GetSommetById(currentTrajet->getId());
+		vector<Sommet*> adjacentNotVisited = getAdjacentsNotVisited(graphe, currentTrajet->getId());
 
 		for (Sommet* sommet : adjacentNotVisited) {
 			Trajet* adjacentTrajet = getTrajetById(list_trajet, sommet->getId());
-			nouveauTemps = sommet->getArc(currentTrajet->getId())->getTemps() + currentTrajet->getTemps();
-			if (adjacentTrajet->getTemps() > nouveauTemps)
-				adjacentTrajet->setTemps(nouveauTemps);
+			double currentTrajetTemps = sommet->getArc(currentTrajet->getId())->getTemps();
+			nouveauTemps = currentTrajetTemps + currentTrajet->getTemps();
+			nouvelAutonomie = currentTrajet->getAutonomie() - currentTrajetTemps * tauxDecharge;
+			if (nouvelAutonomie > 20) {
+				if (adjacentTrajet->getTemps() > nouveauTemps) {
+					adjacentTrajet->setTemps(nouveauTemps);
+					adjacentTrajet->setAutonomie(nouvelAutonomie);
+				}
+			}
+			else{
+				if(currentSommet->getType())
+				{
+					// Si nous somme sur un sommet qui peut charger.
+					nouvelAutonomie = 100 - currentTrajetTemps * tauxDecharge;
+					sommet->setGain(100 - currentTrajet->getAutonomie());
+				}else
+				{
+					//Si nous somme sur un sommet qui ne peut pas charger, on doit alors 
+					//chercher autour de lui pour voir si on a une charge avant
+					vector<Sommet*> procheAdjacentCharged = getAdjacentsChargedVisited(graphe, currentTrajet->getId());
+					if(procheAdjacentCharged == nullptr)
+					{
+						//le tableau est vide 
+					}
+				}
+			}
 		}
 
 		currentTrajet->setIsVisited(true);
-		//graphe->GetSommetById(current_id);
+		//;
 	} while (!IsAllVisited(list_trajet));
 	
 }

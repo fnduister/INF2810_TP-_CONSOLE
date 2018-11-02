@@ -10,7 +10,7 @@ class Arc
 public:
 	Arc(Sommet* sommet1, Sommet* sommet2, int temps);
 	~Arc();
-	Sommet* retournerIdSommetAdjacent(int idPremierSommet);
+	Sommet* retournerSommetAdjacent(int idPremierSommet) const;
 	void ajouterSommet(Sommet* sommet1, Sommet* sommet2);
 
 	void afficher(Sommet* sommet);

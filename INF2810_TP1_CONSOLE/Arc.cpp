@@ -45,7 +45,7 @@ int Arc::getTemps() const {
 	return temps;
 }
 
-Sommet* Arc::retournerIdSommetAdjacent(int id) {
+Sommet* Arc::retournerSommetAdjacent(int id) const {
 	if (sommet1->getId() == id)
 		return sommet2;
 	return sommet1;

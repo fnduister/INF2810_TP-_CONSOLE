@@ -21,15 +21,18 @@ public:
 	bool isVisited() const;
 	int getTemps(int idAutreSommet) const;
 	int getType() const;
-	int getGain() const;
+	double getGain() const;
+	void setGain(double gain);
+	int trouverChargedAdjacent() const;
 
 	vector<Arc*> getArcs();
 
 	void afficher();
+
 private:
 	int id;
 	int type;
-	int gain;
+	double gain;
 	vector<Arc*> arcs;
 	bool visited;
 };
