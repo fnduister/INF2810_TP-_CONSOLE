@@ -189,6 +189,18 @@ Trajet* getTrajetById(vector<Trajet*> tab, int id) {
 	return nullptr;
 }
 
+void afficherChemin(vector<Trajet*>& trajets, int depart, int destination)
+{
+	Trajet* current = getTrajetById(trajets, destination);
+	int initialId = depart;
+	cout << current->getId() ;
+	while (current->getId() != depart)
+	{
+		cout << " <-- " << current->getIdDepart();
+		current = getTrajetById(trajets, current->getIdDepart());
+	}
+
+}
 
 void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_transport) {
 
@@ -304,8 +316,10 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 			fini = destinationSommet->isVisited();
 		//;
 	} while (!IsAllVisited(list_trajet) && !fini && currentTrajet);
-
+	afficherChemin(list_trajet, depart, destination);
 }
+
+
 
 int main(int* argc, char* argv[]) {
 	//enum VehiculeTypePosition{NIOH,MIOH};
@@ -320,7 +334,7 @@ int main(int* argc, char* argv[]) {
 		break;
 	case 'b':
 		graphe = mettreAjourCarte();
-		plusCourtChemin(graphe, 28, 30, 1);
+		plusCourtChemin(graphe, 28, 1, 1);
 		break;
 	default:
 		break;
