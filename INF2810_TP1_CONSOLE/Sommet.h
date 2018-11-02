@@ -23,7 +23,8 @@ public:
 	int getType() const;
 	double getGain() const;
 	void setGain(double gain);
-	int trouverChargedAdjacent();
+	Sommet* trouverChargedAdjacent();
+	bool changeVisibility();
 
 	vector<Arc*> getArcs();
 

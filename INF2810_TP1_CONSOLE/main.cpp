@@ -118,14 +118,14 @@ Graphe* mettreAjourCarte()
 }
 
 double getTauxRecharge(int type_transport) {
-	return 0.7;
+	return 0.8;
 }
 
 void initTab(Graphe* graphe, vector<Trajet*>& tab, int depart) {
 	vector<Sommet*> list_sommets = graphe->GetSommets();
 	for (int i = 0; i < list_sommets.size(); i++) {
 		if (list_sommets[i]->getId() == depart) {
-			tab.push_back(new Trajet(list_sommets[i]->getId(), 0, 100, 1, 0));
+			tab.push_back(new Trajet(list_sommets[i]->getId(), 0, 100, 777, 0));
 		}
 		else {
 			tab.push_back(new Trajet(list_sommets[i]->getId(), std::numeric_limits<int>::max(), 0, 0, 0));
@@ -189,67 +189,137 @@ Trajet* getTrajetById(vector<Trajet*> tab, int id) {
 	return nullptr;
 }
 
+void afficherChemin(vector<Trajet*>& trajets, int depart, int destination)
+{
+	Trajet* current = getTrajetById(trajets, destination);
+	int initialId = depart;
+	cout << current->getId() ;
+	while (current->getId() != depart)
+	{
+		cout << " <-- " << current->getIdDepart();
+		current = getTrajetById(trajets, current->getIdDepart());
+	}
+
+}
 
 void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_transport) {
 
 	double tauxDecharge = getTauxRecharge(type_transport);
 
-	Trajet* currentTrajet;
+	Trajet* currentTrajet = nullptr;
 
 	double nouveauTemps = 0, nouvelAutonomie = 0.0;
 
 	vector<Trajet*> list_trajet;
 	initTab(graphe, list_trajet, depart);
 
-	bool FisrtTime = true;
+	bool fini = false;
+	Sommet* destinationSommet = graphe->GetSommetById(destination);
+
+
+	bool FirstTime = true;
 
 	do {
 
-		if (FisrtTime) {
+		if (FirstTime) {
 			currentTrajet = getTrajetById(list_trajet, depart);
-			FisrtTime = false;
+			FirstTime = false;
 		}
-		else
-			currentTrajet = getSmallestDistanceNotVisited(list_trajet);
+
+		Sommet* currentSommet = graphe->GetSommetById(currentTrajet->getId());
+
+		if (currentSommet->getId() == 23)
+			int pausebro = 5;
 
 		vector<Sommet*> adjacentNotVisited = getAdjacentsNotVisited(graphe, currentTrajet->getId());
+		bool alternativeCreated = false;
+		int altId = 0, altTemps = 0;
+		double altAutonomie = 0.0;
 
 		for (Sommet* sommet : adjacentNotVisited) {
+
+			
+
 			Trajet* adjacentTrajet = getTrajetById(list_trajet, sommet->getId());
-			Sommet* currentSommet = graphe->GetSommetById(currentTrajet->getId());
 			double currentTrajetTemps = sommet->getArc(currentTrajet->getId())->getTemps();
 			nouveauTemps = currentTrajetTemps + currentTrajet->getTemps();
 			nouvelAutonomie = currentTrajet->getAutonomie() - currentTrajetTemps * tauxDecharge;
-			if (nouvelAutonomie > 20) {
-				if (adjacentTrajet->getTemps() > nouveauTemps) {
+			if (adjacentTrajet->getTemps() > nouveauTemps) {
+				//Si on trouve un trajet plus court alors on test pour voir si l'autonomie est toujours bonne
+
+				//if (currentSommet->getId() == 1)
+				//	int pausebro = 5;
+
+				if (nouvelAutonomie > 20) {
+
 					adjacentTrajet->setTemps(nouveauTemps);
 					adjacentTrajet->setAutonomie(nouvelAutonomie);
+					adjacentTrajet->setIdDepart(currentTrajet->getId());
+
 				}
-			}
-			else{
-				if(currentSommet->getType())
-				{
-					// Si nous somme sur un sommet qui peut charger.
-					nouvelAutonomie = 100 - currentTrajetTemps * tauxDecharge;
-					sommet->setGain(100 - currentTrajet->getAutonomie());
-				}else
-				{
-					//Si nous somme sur un sommet qui ne peut pas charger, on doit alors 
-					//chercher autour de lui pour voir si on a une charge avant
-					int procheAdjacentIdCharged = currentSommet->trouverChargedAdjacent();
-					if(procheAdjacentIdCharged == 777)
+				else {
+					if (currentSommet->getType())
 					{
-						//le tableau est vide et on doit manger
+						// Si nous somme sur un sommet qui peut charger alors on charge directement ici.
+						nouvelAutonomie = 100 - currentTrajetTemps * tauxDecharge;
+						sommet->setGain(100 - currentTrajet->getAutonomie());
+					}
+					else
+					{
+						//Si nous somme sur un sommet qui ne peut pas charger, on doit alors 
+						//chercher autour de lui pour voir si on a une charge avant
+						Sommet* precedentSommet = currentSommet->trouverChargedAdjacent();
+						if (precedentSommet != nullptr)
+						{
+							int procheAdjacentIdCharged = precedentSommet->getId();
+
+							if(!alternativeCreated)
+							{
+								//creation d'un trajet alternatif
+
+								Trajet* precedentTrajet = getTrajetById(list_trajet, procheAdjacentIdCharged);
+								altId = currentSommet->getId() + 100;
+
+								//on ajoute le gain d'energie qui s'est fait a cette hopital ainsi que la nouvelle autonomie l'hopital actuel
+								precedentSommet->setGain(100 - precedentTrajet->getAutonomie());
+								altAutonomie = 100 - currentSommet->getArc(procheAdjacentIdCharged)->getTemps() * tauxDecharge;
+
+								//on ajoute le temps supplementaire necessaire a la recharge
+								altTemps = 120 + precedentTrajet->getTemps() + currentSommet->getArc(procheAdjacentIdCharged)->getTemps();
+
+								//ajouter au tableau des trajets
+								list_trajet.push_back(new Trajet(altId, altTemps, altAutonomie, procheAdjacentIdCharged, true));
+								alternativeCreated = true;
+							}
+							//Assignation de ce trajet dans notre prochain trajet.
+							nouveauTemps = currentTrajetTemps + altTemps;
+							nouvelAutonomie = altAutonomie - currentTrajetTemps * tauxDecharge;
+							adjacentTrajet->setTemps(nouveauTemps);
+							adjacentTrajet->setAutonomie(nouvelAutonomie);
+							adjacentTrajet->setIdDepart(altId);
+						}
 					}
 				}
 			}
 		}
 
 		currentTrajet->setIsVisited(true);
-		//;
-	} while (!IsAllVisited(list_trajet));
+		currentSommet->changeVisibility();
 
+		//on change le target pour la prochaine recherche
+		currentTrajet = getSmallestDistanceNotVisited(list_trajet);
+
+		if (!currentTrajet)
+			int pause = 0;
+
+		if (destinationSommet)
+			fini = destinationSommet->isVisited();
+		//;
+	} while (!IsAllVisited(list_trajet) && !fini && currentTrajet);
+	afficherChemin(list_trajet, depart, destination);
 }
+
+
 
 int main(int* argc, char* argv[]) {
 	//enum VehiculeTypePosition{NIOH,MIOH};
@@ -264,7 +334,7 @@ int main(int* argc, char* argv[]) {
 		break;
 	case 'b':
 		graphe = mettreAjourCarte();
-		plusCourtChemin(graphe, 1, 8, 1);
+		plusCourtChemin(graphe, 28, 1, 1);
 		break;
 	default:
 		break;

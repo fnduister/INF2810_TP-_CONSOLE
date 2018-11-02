@@ -75,6 +75,11 @@ bool Sommet::isVisited() const {
 	return visited;
 }
 
+bool Sommet::changeVisibility() {
+	visited = !visited;
+	return visited;
+}
+
 Sommet::~Sommet()
 {
 }
@@ -84,16 +89,16 @@ bool plusPetitArc(const Arc* first,const Arc* last)
 	return first->getTemps() < last->getTemps();
 }
 
-int Sommet::trouverChargedAdjacent()
+Sommet* Sommet::trouverChargedAdjacent()
 {
-	double max = 0;
+	int max = 777;
 	std::sort(arcs.begin(), arcs.end(),plusPetitArc); 
 
 	for (Arc* arc : arcs) {
 		Sommet* sommet_temp = arc->retournerSommetAdjacent(id);
 		if (sommet_temp->isVisited() && sommet_temp->getType()) {
-			return sommet_temp->getId();
-			}
+			return sommet_temp;
+		}
 	}
-	return 777;
+	return nullptr;
 }
