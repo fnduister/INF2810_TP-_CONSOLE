@@ -1,15 +1,15 @@
 #include "Vehicule.h"
 
 
-Vehicule::Vehicule(int categorie, int type)
+Vehicule::Vehicule(int categorie, int type):categorie(categorie), type(type)
 {
-	taux[NI_NH][FAIBLE_RISQUE] = 6/60;
-	taux[NI_NH][MOYEN_RISQUE] = 12 / 60;
-	taux[NI_NH][HAUT_RISQUE] = 48 / 60;
-	taux[LI_ION][FAIBLE_RISQUE] = 5 / 60;
-	taux[LI_ION][MOYEN_RISQUE] = 10 / 60;
-	taux[LI_ION][HAUT_RISQUE] = 30 / 60;
-	currentTauxDecharge = taux[type][categorie];
+	taux[NI_NH][FAIBLE_RISQUE] = 6.0 / 60;
+	taux[NI_NH][MOYEN_RISQUE] = 12.0 / 60;
+	taux[NI_NH][HAUT_RISQUE] = 48.0 / 60;
+	taux[LI_ION][FAIBLE_RISQUE] = 5.0 / 60;
+	taux[LI_ION][MOYEN_RISQUE] = 10.0 / 60;
+	taux[LI_ION][HAUT_RISQUE] = 30.0 / 60;
+
 }
 
 
@@ -22,7 +22,22 @@ void Vehicule::setType(int type)
 	this->type = type;
 }
 
-std::string Vehicule::getStringType(int type)
+void Vehicule::setCategorie(int categorie)
+{
+	this->categorie = categorie;
+}
+
+int Vehicule::getType() const
+{
+	return type;
+}
+
+int Vehicule::getCategorie() const
+{
+	return categorie;
+}
+
+std::string Vehicule::getStringType() const
 {
 	switch (type)
 	{
@@ -35,7 +50,7 @@ std::string Vehicule::getStringType(int type)
 	}
 }
 
-std::string Vehicule::getStringCategorie(int categorie)
+std::string Vehicule::getStringCategorie() const
 {
 	switch (categorie)
 	{
@@ -50,16 +65,7 @@ std::string Vehicule::getStringCategorie(int categorie)
 	}
 }
 
-void Vehicule::setCurrentTauxDecharge(int type, int categorie)
-{
-	currentTauxDecharge = taux[type][categorie];
-}
-
-std::string Vehicule::getType() const
-{
-	return type;
-}
 
 double Vehicule::getCurrentTauxDecharge() const {
-	return currentTauxDecharge;
+	return taux[type][categorie];
 }
