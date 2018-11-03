@@ -18,6 +18,15 @@ void Graphe::ajouterArc(Arc* arc)
 	arcs.push_back(arc);
 }
 
+void Graphe::setVehicule(Vehicule* vehicule)
+{
+	this->vehicule = vehicule;
+}
+
+Vehicule* Graphe::getVehicule() const
+{
+	return vehicule;
+}
 
 Sommet* Graphe::GetSommetById(int sommetId){
 	int i = 0;

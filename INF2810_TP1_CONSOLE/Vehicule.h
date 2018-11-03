@@ -13,17 +13,15 @@ public:
 	void setType(int type);
 	void setCategorie(int categorie);
 	int getCategorie() const;
-	void getType() const;
-	std::string getStringType(int type);
+	int getType() const;
+	std::string getStringType() const;
+	std::string getStringCategorie() const;
 	double getCurrentTauxDecharge() const;
 	void setCurrentTauxDecharge(int type, int categorie);
-
-
 
 private:
 	double taux[2][3];
 	int type;
-	double currentTauxDecharge;
 	int categorie;
 };
 
