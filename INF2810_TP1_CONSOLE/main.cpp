@@ -214,16 +214,7 @@ bool plusgrandtrajet(Trajet* a, Trajet* b)
 	return a->getTemps() > b->getTemps();
 }
 
-Trajet* extraireSousGraphe(Graphe* graphe, vector<Trajet*>& trajets, int depart)
-{
-	std::sort(trajets.begin(), trajets.end(), plusgrandtrajet);
-	Trajet* trajetLePlusLong;
-	for (Trajet* trajet : trajets)
-	{
-		if (trajet->getTemps() != std::numeric_limits<int>::max())
-			return trajet;
-	}
-}
+
 
 vector<Trajet*> dijkstra(Graphe* graphe, int depart, int destination = 777,
                          bool plusLongUniquement = false
@@ -284,7 +275,7 @@ vector<Trajet*> dijkstra(Graphe* graphe, int depart, int destination = 777,
 				else
 				{
 					// au cas ou on veut le plus long chemin uniquement on n'arrete la recherche au dessus de 20% d'autonomie.
-					if (!plusLongUniquement)
+					if (destinationSommet)
 					{
 						if (currentSommet->getType())
 						{
@@ -355,7 +346,33 @@ vector<Trajet*> dijkstra(Graphe* graphe, int depart, int destination = 777,
 }
 
 
-void prendreInformationsPlusLongChemin(Graphe* graphe, int& depart, int& type_transport)
+void extraireSousGraphe(Graphe* graphe, int& depart, int categorie, int type)
+{
+	string infoTrajet;
+	graphe->setVehicule(new Vehicule(categorie, type));
+	vector<Trajet*> trajets = dijkstra(graphe, depart);
+	Trajet* plusLongTrajet = nullptr;
+	std::sort(trajets.begin(), trajets.end(), plusgrandtrajet);
+
+	for (Trajet* trajet : trajets)
+	{
+		if (trajet->getTemps() != std::numeric_limits<int>::max()) {
+			plusLongTrajet = trajet;
+			break;
+		}
+	}
+
+	infoTrajet += "\n\nType de vehicule: " + graphe->getVehicule()->getStringType() + "\n";
+	infoTrajet += "Categorie de vehicule demande : " + graphe->getVehicule()->getStringCategorie() + "\n";
+	infoTrajet += "Le trajet se fait en : " + to_string(plusLongTrajet->getTemps()) + "\n";
+	infoTrajet += "Avec une autonomie finale de : " + to_string(plusLongTrajet->getAutonomie()) + "\n";
+	infoTrajet += afficherChemin(trajets, depart, plusLongTrajet->getId());
+
+	cout << infoTrajet;
+	cout << endl << endl;
+}
+
+void prendreInformationsPlusLongChemin(Graphe* graphe, int& depart, int& categorie, int& type)
 {
 	int choix;
 	do
@@ -378,36 +395,97 @@ void prendreInformationsPlusLongChemin(Graphe* graphe, int& depart, int& type_tr
 		switch (choix)
 		{
 		case 1:
-			type_transport = HAUT_RISQUE;
+			categorie = HAUT_RISQUE;
 			break;
 		case 2:
-			type_transport = MOYEN_RISQUE;
+			categorie = MOYEN_RISQUE;
 			break;
 		case 3:
-			type_transport = FAIBLE_RISQUE;
+			categorie = FAIBLE_RISQUE;
 			break;
 		default:
 			cout << "votre choix n'est pas valide" << endl;
 			choix = 4;
 			break;
 		}
-	}
-	while (choix == 4);
+
+		cout << endl;
+	} while (choix == 4);
+
+
+	do
+	{
+		cout << "Choisissez le type de transport que vous voulez" << endl;
+		cout << " 1 - LI-ION \n 2 - NI_NH \n ";
+		cout << "votre choix: ";
+		cin >> choix;
+
+		switch (choix)
+		{
+		case 1:
+			type = LI_ION;
+			break;
+		case 2:
+			type = NI_NH;
+			break;
+		default:
+			cout << "votre choix n'est pas valide" << endl;
+			choix = 4;
+			break;
+		}
+		cout << endl;
+
+	} while (choix == 4);
+
 }
 
-void prendreInformationsPlusCourtChemin(Graphe* graphe, int& depart, int& destination, int& type_transport)
+void prendreInformationsPlusCourtChemin(Graphe* graphe, int& depart, int& destination, int& categorie)
 {
+	int choix;
+	do
+	{
+		cout << "- point d'origine: ";
+		cin >> depart;
+		cout << endl;
+	} while (!graphe->GetSommetById(depart));
+
+	cout << endl;
+
 	do
 	{
 		cout << "- point de destination: ";
 		cin >> destination;
 		cout << endl;
-	}
-	while (!graphe->GetSommetById(destination));
+	} while (!graphe->GetSommetById(destination));
 
 	cout << endl;
 
-	prendreInformationsPlusLongChemin(graphe, depart, type_transport);
+	do
+	{
+		cout << "Choisissez la categorie de transport que vous voulez" << endl;
+		cout << " 1 - Haut risque \n 2 - Moyen risque \n 3 - Faible risque \n ";
+		cout << "votre choix: ";
+		cin >> choix;
+
+		switch (choix)
+		{
+		case 1:
+			categorie = HAUT_RISQUE;
+			break;
+		case 2:
+			categorie = MOYEN_RISQUE;
+			break;
+		case 3:
+			categorie = FAIBLE_RISQUE;
+			break;
+		default:
+			cout << "votre choix n'est pas valide" << endl;
+			choix = 4;
+			break;
+		}
+	} while (choix == 4);
+
+	cout << endl;
 }
 
 void plusCourtChemin(Graphe* graphe, int& depart, int& destination, int& categorie)
@@ -455,7 +533,7 @@ void plusCourtChemin(Graphe* graphe, int& depart, int& destination, int& categor
 void afficherMenu()
 {
 	Graphe* graphe = mettreAjourCarte(true);
-	int depart = 0, destination = 0, categorie_transport = HAUT_RISQUE;
+	int depart = 0, destination = 0, categorie_transport = HAUT_RISQUE, type_transport = NI_NH;
 	graphe->setVehicule(new Vehicule(NI_NH, FAIBLE_RISQUE));
 
 	char reponse;
@@ -480,8 +558,8 @@ void afficherMenu()
 		plusCourtChemin(graphe, depart, destination, categorie_transport);
 		break;
 	case 'c':
-		prendreInformationsPlusLongChemin(graphe, depart, categorie_transport);
-		//extraireSousGraphe(graphe, 28, 1, 1);
+		prendreInformationsPlusLongChemin(graphe, depart, categorie_transport, type_transport);
+		extraireSousGraphe(graphe, depart, categorie_transport, type_transport);
 		break;
 	case 'd':
 		cout << "a la prochaine";

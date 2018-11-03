@@ -17,7 +17,6 @@ public:
 	std::string getStringType() const;
 	std::string getStringCategorie() const;
 	double getCurrentTauxDecharge() const;
-	void setCurrentTauxDecharge(int type, int categorie);
 
 private:
 	double taux[2][3];
