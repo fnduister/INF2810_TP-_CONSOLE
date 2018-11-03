@@ -362,14 +362,14 @@ void extraireSousGraphe(Graphe* graphe, int& depart, int categorie, int type)
 		}
 	}
 
-	infoTrajet += "\n\nType de vehicule: " + graphe->getVehicule()->getStringType() + "\n";
+	infoTrajet += "\nType de vehicule: " + graphe->getVehicule()->getStringType() + "\n";
 	infoTrajet += "Categorie de vehicule demande : " + graphe->getVehicule()->getStringCategorie() + "\n";
 	infoTrajet += "Le trajet se fait en : " + to_string(plusLongTrajet->getTemps()) + "\n";
 	infoTrajet += "Avec une autonomie finale de : " + to_string(plusLongTrajet->getAutonomie()) + "\n";
 	infoTrajet += afficherChemin(trajets, depart, plusLongTrajet->getId());
 
 	cout << infoTrajet;
-	cout << endl << endl;
+	cout << "\n\n\n\n\n\n\n\n";
 }
 
 void prendreInformationsPlusLongChemin(Graphe* graphe, int& depart, int& categorie, int& type)
@@ -449,16 +449,12 @@ void prendreInformationsPlusCourtChemin(Graphe* graphe, int& depart, int& destin
 		cout << endl;
 	} while (!graphe->GetSommetById(depart));
 
-	cout << endl;
-
 	do
 	{
 		cout << "- point de destination: ";
 		cin >> destination;
 		cout << endl;
 	} while (!graphe->GetSommetById(destination));
-
-	cout << endl;
 
 	do
 	{
@@ -526,8 +522,8 @@ void plusCourtChemin(Graphe* graphe, int& depart, int& destination, int& categor
 		infoTrajet += "desole mais malheureusement on ne peut pas vous deservir car c'est trop loin";
 	}
 	cout << infoTrajet;
-	cout << endl << endl;
-	
+	cout << "\n\n\n\n\n\n\n\n";
+
 }
 
 void afficherMenu()
