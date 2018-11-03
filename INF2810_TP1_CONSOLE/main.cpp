@@ -103,9 +103,9 @@ Graphe* mettreAjourCarte(bool demarrageApplication = false)
 	if (!demarrageApplication)
 	{
 		std::cout << "entrer le nom du fichier svp:\n";
+		std::cin >> nomFichier;
 		graphe = CreerGraphe(nomFichier);
 		cout << "votre graphe a bien ete ouvert et le voici:\n" << endl;
-		std::cin >> nomFichier;
 		LireGraphe(graphe);
 	}
 	else { graphe = CreerGraphe(nomFichierParDefaut); }
@@ -573,7 +573,5 @@ void afficherMenu()
 int main(int* argc, char* argv[])
 {
 	afficherMenu();
-	int pause = 0;
-	std::cin >> pause;
 	return 0;
 }
