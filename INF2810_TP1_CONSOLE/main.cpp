@@ -566,7 +566,8 @@ void afficherMenu()
 	default:
 		break;
 	}
-	afficherMenu();
+	if(reponse != 'd')
+		afficherMenu();
 }
 
 int main(int* argc, char* argv[])
