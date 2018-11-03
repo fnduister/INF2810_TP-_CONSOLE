@@ -1,7 +1,7 @@
 #include "Vehicule.h"
 
 
-Vehicule::Vehicule(int categorie, int type = NI_NH)
+Vehicule::Vehicule(int categorie, int type)
 {
 	taux[NI_NH][FAIBLE_RISQUE] = 6/60;
 	taux[NI_NH][MOYEN_RISQUE] = 12 / 60;
@@ -19,14 +19,32 @@ Vehicule::~Vehicule()
 
 void Vehicule::setType(int type)
 {
+	this->type = type;
+}
+
+std::string Vehicule::getStringType(int type)
+{
 	switch (type)
 	{
 	case 0:
-		this->type = "NI_NH";
-		break;
+		return "NI_NH";
 	case 1:
-		this->type = "LI-ION";
+		return "LI-ION";
+	default:
 		break;
+	}
+}
+
+std::string Vehicule::getStringCategorie(int categorie)
+{
+	switch (categorie)
+	{
+	case 0:
+		return "FAIBLE RISQUE";
+	case 1:
+		return "MOYEN RISQUE";
+	case 2:
+		return "HAUT RISQUE";
 	default:
 		break;
 	}
