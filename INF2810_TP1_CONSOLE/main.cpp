@@ -7,10 +7,12 @@
 #include <vector> 
 #include "Trajet.h"
 #include <algorithm>
+#include "Vehicule.h"
 
 using namespace std;
 
-enum VehiculeCategoriePosition { HAUT_RISQUE, MOYEN_RISQUE, FAIBLE_RISQUE };
+enum VehiculeCategoriePosition { FAIBLE_RISQUE, MOYEN_RISQUE, HAUT_RISQUE };
+enum VehiculeTypePosition { NI_NH, LI_ION };
 
 
 void split(const std::string& str, vector<string>& cont,
@@ -95,8 +97,8 @@ char afficherMenu()
 	char reponse;
 	string reponses = "abcd";
 	do {
-		cout << "(a) Mettre � jour la carte" << endl;
-		cout << "(b) D�terminer le plus court chemin s�curitaire" << endl;
+		cout << "(a) Mettre a jour la carte" << endl;
+		cout << "(b) Determiner le plus court chemin securitaire" << endl;
 		cout << "(c) Extraire un sous-graphe" << endl;
 		cout << "(d) Quitter" << endl;
 		cout << "votre choix: " << endl;
@@ -122,9 +124,6 @@ Graphe* mettreAjourCarte(bool demarrageApplication = false)
 	return graphe;
 }
 
-double getTauxRecharge(int type_transport) {
-	return 0.8;
-}
 
 void initTab(Graphe* graphe, vector<Trajet*>& tab, int depart) {
 	vector<Sommet*> list_sommets = graphe->GetSommets();
@@ -223,10 +222,9 @@ Trajet* extraireSousGraphe(vector<Trajet*>& trajets, int depart)
 	}
 }
 
-void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_transport) {
-
-	double tauxDecharge = getTauxRecharge(type_transport);
-
+void plusCourtChemin(Graphe* graphe, int depart, int categorie, int type = NI_NH, bool plusLongUniquement = false, int destination = 777) {
+	Vehicule* vehicule = new Vehicule(type, categorie);
+	bool premierTypeTeste = true;
 	Trajet* currentTrajet = nullptr;
 
 	double nouveauTemps = 0, nouvelAutonomie = 0.0;
@@ -239,8 +237,8 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 
 
 	bool FirstTime = true;
-
-	do {
+	do{
+		do {
 
 		if (FirstTime) {
 			currentTrajet = getTrajetById(list_trajet, depart);
@@ -253,23 +251,20 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 			int pausebro = 5;
 
 		vector<Sommet*> adjacentNotVisited = getAdjacentsNotVisited(graphe, currentTrajet->getId());
+
+		//variables necessaire pour la creation d'un trajet alternatif;
 		bool alternativeCreated = false;
 		int altId = 0, altTemps = 0;
 		double altAutonomie = 0.0;
 
 		for (Sommet* sommet : adjacentNotVisited) {
 
-			
-
 			Trajet* adjacentTrajet = getTrajetById(list_trajet, sommet->getId());
 			double currentTrajetTemps = sommet->getArc(currentTrajet->getId())->getTemps();
 			nouveauTemps = currentTrajetTemps + currentTrajet->getTemps();
-			nouvelAutonomie = currentTrajet->getAutonomie() - currentTrajetTemps * tauxDecharge;
+			nouvelAutonomie = currentTrajet->getAutonomie() - currentTrajetTemps * vehicule->getCurrentTauxDecharge();
 			if (adjacentTrajet->getTemps() > nouveauTemps) {
 				//Si on trouve un trajet plus court alors on test pour voir si l'autonomie est toujours bonne
-
-				//if (currentSommet->getId() == 1)
-				//	int pausebro = 5;
 
 				if (nouvelAutonomie > 20) {
 
@@ -279,45 +274,48 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 
 				}
 				else {
-					if (currentSommet->getType())
-					{
-						// Si nous somme sur un sommet qui peut charger alors on charge directement ici.
-						nouvelAutonomie = 100 - currentTrajetTemps * tauxDecharge;
-						sommet->setGain(100 - currentTrajet->getAutonomie());
-					}
-					else
-					{
-						//Si nous somme sur un sommet qui ne peut pas charger, on doit alors 
-						//chercher autour de lui pour voir si on a une charge avant
-						Sommet* precedentSommet = currentSommet->trouverChargedAdjacent();
-						if (precedentSommet != nullptr)
+					// au cas ou on veut le plus long chemin uniquement on n'arrete la recherche au dessus de 20% d'autonomie.
+					if (!plusLongUniquement) {
+						if (currentSommet->getType())
 						{
-							int procheAdjacentIdCharged = precedentSommet->getId();
-
-							if(!alternativeCreated)
+							// Si nous somme sur un sommet qui peut charger alors on charge directement ici.
+							nouvelAutonomie = 100 - currentTrajetTemps * vehicule->getCurrentTauxDecharge();
+							sommet->setGain(100 - currentTrajet->getAutonomie());
+						}
+						else
+						{
+							//Si nous somme sur un sommet qui ne peut pas charger, on doit alors 
+							//chercher autour de lui pour voir si on a une charge avant
+							Sommet* precedentSommet = currentSommet->trouverChargedAdjacent();
+							if (precedentSommet != nullptr)
 							{
-								//creation d'un trajet alternatif
+								int procheAdjacentIdCharged = precedentSommet->getId();
 
-								Trajet* precedentTrajet = getTrajetById(list_trajet, procheAdjacentIdCharged);
-								altId = currentSommet->getId() + 100;
+								if (!alternativeCreated)
+								{
+									//creation d'un trajet alternatif
 
-								//on ajoute le gain d'energie qui s'est fait a cette hopital ainsi que la nouvelle autonomie l'hopital actuel
-								precedentSommet->setGain(100 - precedentTrajet->getAutonomie());
-								altAutonomie = 100 - currentSommet->getArc(procheAdjacentIdCharged)->getTemps() * tauxDecharge;
+									Trajet* precedentTrajet = getTrajetById(list_trajet, procheAdjacentIdCharged);
+									altId = currentSommet->getId() + 100;
 
-								//on ajoute le temps supplementaire necessaire a la recharge
-								altTemps = 120 + precedentTrajet->getTemps() + currentSommet->getArc(procheAdjacentIdCharged)->getTemps();
+									//on ajoute le gain d'energie qui s'est fait a cette hopital ainsi que la nouvelle autonomie l'hopital actuel
+									precedentSommet->setGain(100 - precedentTrajet->getAutonomie());
+									altAutonomie = 100 - currentSommet->getArc(procheAdjacentIdCharged)->getTemps() * vehicule->getCurrentTauxDecharge();
 
-								//ajouter au tableau des trajets
-								list_trajet.push_back(new Trajet(altId, altTemps, altAutonomie, procheAdjacentIdCharged, true));
-								alternativeCreated = true;
+									//on ajoute le temps supplementaire necessaire a la recharge
+									altTemps = 120 + precedentTrajet->getTemps() + currentSommet->getArc(procheAdjacentIdCharged)->getTemps();
+
+									//ajouter au tableau des trajets
+									list_trajet.push_back(new Trajet(altId, altTemps, altAutonomie, procheAdjacentIdCharged, true));
+									alternativeCreated = true;
+								}
+								//Assignation de ce trajet dans notre prochain trajet.
+								nouveauTemps = currentTrajetTemps + altTemps;
+								nouvelAutonomie = altAutonomie - currentTrajetTemps * vehicule->getCurrentTauxDecharge();
+								adjacentTrajet->setTemps(nouveauTemps);
+								adjacentTrajet->setAutonomie(nouvelAutonomie);
+								adjacentTrajet->setIdDepart(altId);
 							}
-							//Assignation de ce trajet dans notre prochain trajet.
-							nouveauTemps = currentTrajetTemps + altTemps;
-							nouvelAutonomie = altAutonomie - currentTrajetTemps * tauxDecharge;
-							adjacentTrajet->setTemps(nouveauTemps);
-							adjacentTrajet->setAutonomie(nouvelAutonomie);
-							adjacentTrajet->setIdDepart(altId);
 						}
 					}
 				}
@@ -327,16 +325,16 @@ void plusCourtChemin(Graphe* graphe, int depart, int destination, int type_trans
 		currentTrajet->setIsVisited(true);
 		currentSommet->changeVisibility();
 
-		//on change le target pour la prochaine recherche
+		// 1er etape de dijkstra: trouver le trajet avec la plus petite distance
 		currentTrajet = getSmallestDistanceNotVisited(list_trajet);
-
-		if (!currentTrajet)
-			int pause = 0;
 
 		if (destinationSommet)
 			fini = destinationSommet->isVisited();
 		//;
 	} while (!IsAllVisited(list_trajet) && !fini && currentTrajet);
+	if (!destinationSommet->isVisited() && premierTypeTeste)
+		vehicule->setCurrentTauxDecharge(LI_ION, categorie);
+	} while (recommence);
 	afficherChemin(list_trajet, depart, destination);
 }
 
@@ -392,7 +390,6 @@ void prendreInformationsPlusCourtChemin(Graphe* graphe, int &depart, int &destin
 
 
 int main(int* argc, char* argv[]) {
-	enum VehiculeTypePosition{NI_NH,LI_ION};
 	Graphe* graphe = mettreAjourCarte(true);
 	int depart = 0, destination = 0, categorie_transport = HAUT_RISQUE;
 
